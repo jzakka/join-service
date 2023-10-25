@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @FeignClient(name = "gather-service")
 public interface GatherServiceClient {
-    @GetMapping("/gather-service/{gatherId}")
+    @GetMapping("/gathers/{gatherId}")
     ResponseGather getGather(@PathVariable String gatherId);
 }

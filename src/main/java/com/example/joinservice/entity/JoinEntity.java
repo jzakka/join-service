@@ -3,6 +3,7 @@ package com.example.joinservice.entity;
 import com.example.joinservice.enums.Rule;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -31,6 +32,7 @@ public class JoinEntity {
     @Enumerated(value = EnumType.STRING)
     private Rule rule;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "join", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
     private List<SelectDateTimeEntity> selectDateTimes = new ArrayList<>();
     @CreatedDate
     private LocalDateTime createdAt;

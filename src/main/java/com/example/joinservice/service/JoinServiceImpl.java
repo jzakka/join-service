@@ -7,6 +7,7 @@ import com.example.joinservice.dto.JoinDto;
 import com.example.joinservice.dto.SelectDateTimeDto;
 import com.example.joinservice.entity.JoinEntity;
 import com.example.joinservice.repository.JoinRepository;
+import com.example.joinservice.vo.ResponseJoin;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -79,5 +81,12 @@ public class JoinServiceImpl implements JoinService{
         gatherMember.getSelectDateTimes().size();
 
         joinRepository.delete(gatherMember);
+    }
+
+    @Override
+    public List<ResponseJoin> getJoins(String gatherId) {
+        List<JoinEntity> gathers = joinRepository.findByGatherId(gatherId);
+
+        return gathers.stream().map(gather -> mapper.map(gather, ResponseJoin.class)).toList();
     }
 }

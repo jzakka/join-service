@@ -6,6 +6,7 @@ import com.example.joinservice.dto.SelectDateTimeDto;
 import com.example.joinservice.enums.GatherState;
 import com.example.joinservice.enums.Rule;
 import com.example.joinservice.vo.ResponseGather;
+import com.example.joinservice.vo.ResponseJoin;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,17 +14,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@Transactional
 class JoinServiceImplTest {
     @Autowired
     JoinService joinService;
@@ -192,6 +196,38 @@ class JoinServiceImplTest {
         assertThatThrownBy(() -> joinService.joinGather(joinDto))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining(env.getProperty("select-time.validation.deadline-msg"));
+    }
+
+    @Test
+    @DisplayName("모임 참여자 조회")
+    void getJoins() {
+        JoinDto joinDto1 = dummyJoinDto(
+                "test-gather-id",
+                "test-user-id1",
+                Rule.MEMBER,
+                LocalDateTime.of(2077, 10, 3, 4, 5),
+                LocalDateTime.of(2077, 10, 3, 5, 40),
+                LocalDateTime.of(2077, 10, 5, 5, 7),
+                LocalDateTime.of(2077, 10, 5, 6, 52)
+        );
+
+        JoinDto joinDto2 = dummyJoinDto(
+                "test-gather-id",
+                "test-user-id2",
+                Rule.MEMBER,
+                LocalDateTime.of(2077, 10, 4, 3, 31),
+                LocalDateTime.of(2077, 10, 4, 5, 41),
+                LocalDateTime.of(2077, 10, 6, 6, 7),
+                LocalDateTime.of(2077, 10, 6, 8, 50)
+        );
+
+        joinService.joinGather(joinDto1);
+        JoinDto joinedResult = joinService.joinGather(joinDto2);
+
+        List<ResponseJoin> joins = joinService.getJoins(joinedResult.getGatherId());
+
+        long selectDatTimesCount = joins.stream().mapToLong(join -> join.getSelectDateTimes().size()).sum();
+        assertThat(selectDatTimesCount).isEqualTo(4);
     }
 
     private JoinDto dummyJoinDto(String gatherId,

@@ -45,4 +45,15 @@ public class JoinController {
 
         return ResponseEntity.ok().build();
     }
+
+    @PatchMapping("/joins")
+    public ResponseEntity<ResponseJoin> changeSelectDateTimes(@RequestBody RequestJoin join) {
+        JoinDto joinDto = mapper.map(join, JoinDto.class);
+
+        JoinDto result = joinService.changeSelectDateTimes(joinDto);
+
+        ResponseJoin body = mapper.map(result, ResponseJoin.class);
+
+        return ResponseEntity.ok().body(body);
+    }
 }

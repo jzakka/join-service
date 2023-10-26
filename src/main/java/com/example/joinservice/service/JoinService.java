@@ -11,4 +11,6 @@ public interface JoinService {
     void cancelGather(String gatherId, String userId);
 
     List<ResponseJoin> getJoins(String gatherId);
+
+    JoinDto changeSelectDateTimes(JoinDto join);
 }

@@ -78,9 +78,7 @@ public class JoinServiceImpl implements JoinService{
                 .findByGatherIdAndUserId(gatherId, userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, env.getProperty("gather.member.not-found-msg")));
 
-        gatherMember.getSelectDateTimes().size();
-
-        joinRepository.delete(gatherMember);
+        joinRepository.deleteJoinAndSelectDateTimes(gatherMember);
     }
 
     @Override
@@ -88,5 +86,14 @@ public class JoinServiceImpl implements JoinService{
         List<JoinEntity> gathers = joinRepository.findByGatherId(gatherId);
 
         return gathers.stream().map(gather -> mapper.map(gather, ResponseJoin.class)).toList();
+    }
+
+    @Override
+    public JoinDto changeSelectDateTimes(JoinDto join) {
+        cancelGather(join.getGatherId(), join.getUserId());
+
+        joinRepository.flush();
+
+        return joinGather(join);
     }
 }

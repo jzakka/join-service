@@ -2,6 +2,7 @@ package com.example.joinservice.controller;
 
 import com.example.joinservice.dto.JoinDto;
 import com.example.joinservice.service.JoinService;
+import com.example.joinservice.vo.RequestCancel;
 import com.example.joinservice.vo.RequestJoin;
 import com.example.joinservice.vo.ResponseJoin;
 import lombok.RequiredArgsConstructor;
@@ -36,5 +37,12 @@ public class JoinController {
         List<ResponseJoin> body = joinService.getJoins(gatherId);
 
         return ResponseEntity.ok().body(body);
+    }
+
+    @DeleteMapping("/joins")
+    public ResponseEntity cancelGather(@RequestBody RequestCancel cancel) {
+        joinService.cancelGather(cancel.getGatherId(), cancel.getUserId());
+
+        return ResponseEntity.ok().build();
     }
 }

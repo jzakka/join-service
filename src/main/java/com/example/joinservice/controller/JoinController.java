@@ -2,9 +2,11 @@ package com.example.joinservice.controller;
 
 import com.example.joinservice.dto.JoinDto;
 import com.example.joinservice.service.JoinService;
+import com.example.joinservice.utils.JwtUtils;
 import com.example.joinservice.vo.RequestCancel;
 import com.example.joinservice.vo.RequestJoin;
 import com.example.joinservice.vo.ResponseJoin;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.core.env.Environment;
@@ -22,8 +24,9 @@ public class JoinController {
     private final Environment env;
 
     @PostMapping("/joins")
-    public ResponseEntity<ResponseJoin> joinGather(@RequestBody RequestJoin join) {
+    public ResponseEntity<ResponseJoin> joinGather(String memberId, @RequestBody RequestJoin join) {
         JoinDto joinDto = mapper.map(join, JoinDto.class);
+        joinDto.setMemberId(memberId);
 
         JoinDto joinResultDto = joinService.joinGather(joinDto);
 
@@ -40,15 +43,17 @@ public class JoinController {
     }
 
     @DeleteMapping("/joins")
-    public ResponseEntity cancelGather(@RequestBody RequestCancel cancel) {
+    public ResponseEntity cancelGather(String memberId, @RequestBody RequestCancel cancel) {
+        cancel.setMemberId(memberId);
         joinService.cancelGather(cancel.getGatherId(), cancel.getMemberId());
 
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/joins")
-    public ResponseEntity<ResponseJoin> changeSelectDateTimes(@RequestBody RequestJoin join) {
+    public ResponseEntity<ResponseJoin> changeSelectDateTimes(String memberId, @RequestBody RequestJoin join) {
         JoinDto joinDto = mapper.map(join, JoinDto.class);
+        joinDto.setMemberId(memberId);
 
         JoinDto result = joinService.changeSelectDateTimes(joinDto);
 

@@ -59,6 +59,10 @@ email:
   title: '%s모임의 일정이 확정되었습니다!'
   content: '지금 모임 일정을 확인하러 가보세요!링크[http://moiza.com/gather-service/gathers/%s]'
 
+token:
+  expiration_time: 21600000 # 60 * 60 * 6 * 1000=> 6시간
+  secret: testtoken # TODO 설정 파일 보안정보 옮기기
+
 management:
   endpoints:
     web:

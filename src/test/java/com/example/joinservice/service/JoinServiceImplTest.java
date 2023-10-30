@@ -234,6 +234,7 @@ class JoinServiceImplTest {
                                  String userId, Rule rule, LocalDateTime ... selectDateTimes) {
         JoinDto joinDto = JoinDto.builder()
                 .gatherId(gatherId)
+                .gatherName("test-gather")
                 .memberId(userId)
                 .email("test@test.com")
                 .rule(rule)

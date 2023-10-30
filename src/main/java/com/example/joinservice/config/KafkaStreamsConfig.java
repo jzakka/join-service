@@ -54,11 +54,13 @@ public class KafkaStreamsConfig {
 
     @NotNull
     private List<JsonNode> getObjectNodes(String gatherId) {
+        final String TITLE_TEMPLATE = env.getProperty("email.title");
+        final String CONTENT_TEMPLATE = env.getProperty("email.content");
         return joinService.getJoins(gatherId).stream()
                 .map(joinVo -> {
                     String to = joinVo.getEmail();
-                    String title = env.getProperty("email.title");
-                    String content = env.getProperty("email.content");
+                    String title = TITLE_TEMPLATE.formatted(joinVo.getGatherName());
+                    String content = CONTENT_TEMPLATE.formatted(joinVo.getGatherId());
 
                     ObjectNode objectNode = objectMapper.createObjectNode();
                     objectNode.put("to", to);

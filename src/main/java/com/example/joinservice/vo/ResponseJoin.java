@@ -10,6 +10,7 @@ import java.util.List;
 @Data
 public class ResponseJoin {
     private String gatherId;
+    private String gatherName;
     private String email;
     private String memberId;
     private Rule rule;

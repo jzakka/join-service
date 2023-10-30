@@ -27,6 +27,8 @@ public class JoinEntity {
     @Column(nullable = false)
     private String gatherId;
     @Column(nullable = false)
+    private String gatherName;
+    @Column(nullable = false)
     private String memberId;
     @Column(nullable = false)
     private String email;

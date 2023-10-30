@@ -14,6 +14,7 @@ import java.util.*;
 @AllArgsConstructor
 public class JoinDto {
     private String gatherId;
+    private String gatherName;
     private String memberId;
     private String email;
     private Rule rule;

@@ -10,7 +10,8 @@ import java.util.List;
 @Data
 public class RequestJoin {
     private String gatherId;
-    private String userId;
+    private String email;
+    private String memberId;
     private Rule rule;
     private List<RequestDateTime> selectDateTimes = new ArrayList<>();
 

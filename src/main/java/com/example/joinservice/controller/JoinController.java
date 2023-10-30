@@ -41,7 +41,7 @@ public class JoinController {
 
     @DeleteMapping("/joins")
     public ResponseEntity cancelGather(@RequestBody RequestCancel cancel) {
-        joinService.cancelGather(cancel.getGatherId(), cancel.getUserId());
+        joinService.cancelGather(cancel.getGatherId(), cancel.getMemberId());
 
         return ResponseEntity.ok().build();
     }

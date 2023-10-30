@@ -16,7 +16,7 @@ import java.util.List;
 @Table(name = "joins", uniqueConstraints = {
         @UniqueConstraint(
                 name = "gatherMember",
-                columnNames = {"gatherId", "userId"}
+                columnNames = {"gatherId", "memberId"}
         )
 })
 @EntityListeners(AuditingEntityListener.class)
@@ -27,7 +27,9 @@ public class JoinEntity {
     @Column(nullable = false)
     private String gatherId;
     @Column(nullable = false)
-    private String userId;
+    private String memberId;
+    @Column(nullable = false)
+    private String email;
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private Rule rule;

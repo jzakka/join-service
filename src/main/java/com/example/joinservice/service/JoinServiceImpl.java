@@ -75,7 +75,7 @@ public class JoinServiceImpl implements JoinService{
     @Override
     public void cancelGather(String gatherId, String userId) {
         JoinEntity gatherMember = joinRepository
-                .findByGatherIdAndUserId(gatherId, userId)
+                .findByGatherIdAndMemberId(gatherId, userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, env.getProperty("gather.member.not-found-msg")));
 
         joinRepository.deleteJoinAndSelectDateTimes(gatherMember);
@@ -90,7 +90,7 @@ public class JoinServiceImpl implements JoinService{
 
     @Override
     public JoinDto changeSelectDateTimes(JoinDto join) {
-        cancelGather(join.getGatherId(), join.getUserId());
+        cancelGather(join.getGatherId(), join.getMemberId());
 
         joinRepository.flush();
 

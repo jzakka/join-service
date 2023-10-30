@@ -95,7 +95,7 @@ class JoinServiceImplTest {
 
         JoinDto joinedDto = joinService.joinGather(joinDto);
 
-        joinService.cancelGather(joinedDto.getGatherId(), joinedDto.getUserId());
+        joinService.cancelGather(joinedDto.getGatherId(), joinedDto.getMemberId());
     }
 
     @Test
@@ -119,7 +119,7 @@ class JoinServiceImplTest {
 
         JoinDto joinedResult = joinService.joinGather(joinDto);
 
-        assertThat(joinedResult.getUserId()).isEqualTo("test-user-id");
+        assertThat(joinedResult.getMemberId()).isEqualTo("test-user-id");
         assertThat(joinedResult.getRule()).isEqualTo(Rule.MEMBER);
         assertThat(joinedResult.getSelectDateTimes().size()).isEqualTo(2); // 선택한 시간대가 2개임
     }
@@ -232,10 +232,12 @@ class JoinServiceImplTest {
 
     private JoinDto dummyJoinDto(String gatherId,
                                  String userId, Rule rule, LocalDateTime ... selectDateTimes) {
-        JoinDto joinDto = new JoinDto();
-        joinDto.setGatherId(gatherId);
-        joinDto.setUserId(userId);
-        joinDto.setRule(rule);
+        JoinDto joinDto = JoinDto.builder()
+                .gatherId(gatherId)
+                .memberId(userId)
+                .email("test@test.com")
+                .rule(rule)
+                .build();
 
         for (int i = 0; i < selectDateTimes.length; i+=2) {
             SelectDateTimeDto selectDateTimeDto = new SelectDateTimeDto();

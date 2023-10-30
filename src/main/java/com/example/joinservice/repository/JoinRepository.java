@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface JoinRepository extends JpaRepository<JoinEntity, Long> {
-    Optional<JoinEntity> findByGatherIdAndUserId(String gatherId, String userId);
+    Optional<JoinEntity> findByGatherIdAndMemberId(String gatherId, String memberId);
 
     List<JoinEntity> findByGatherId(String gatherId);
 

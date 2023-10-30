@@ -34,9 +34,17 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+    implementation 'org.apache.kafka:kafka-streams'
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'org.apache.kafka:kafka-streams'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.cloud:spring-cloud-starter-bus-amqp'
+    implementation 'org.springframework.cloud:spring-cloud-stream-binder-rabbit'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.amqp:spring-rabbit-test'
 
     // https://mvnrepository.com/artifact/org.modelmapper/modelmapper
     implementation 'org.modelmapper:modelmapper:3.2.0'

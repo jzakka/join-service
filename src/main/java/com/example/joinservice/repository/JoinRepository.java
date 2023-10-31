@@ -25,4 +25,6 @@ public interface JoinRepository extends JpaRepository<JoinEntity, Long> {
         deleteSelectDateTimes(join);
         delete(join);
     }
+
+    List<JoinEntity> findByMemberId(String memberId);
 }

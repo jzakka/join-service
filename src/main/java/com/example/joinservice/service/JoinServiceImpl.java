@@ -8,6 +8,7 @@ import com.example.joinservice.dto.SelectDateTimeDto;
 import com.example.joinservice.entity.JoinEntity;
 import com.example.joinservice.repository.JoinRepository;
 import com.example.joinservice.vo.ResponseJoin;
+import com.example.joinservice.vo.TokenJoinAuthority;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -83,9 +84,9 @@ public class JoinServiceImpl implements JoinService{
 
     @Override
     public List<ResponseJoin> getJoins(String gatherId) {
-        List<JoinEntity> gathers = joinRepository.findByGatherId(gatherId);
+        List<JoinEntity> members = joinRepository.findByGatherId(gatherId);
 
-        return gathers.stream().map(gather -> mapper.map(gather, ResponseJoin.class)).toList();
+        return members.stream().map(gather -> mapper.map(gather, ResponseJoin.class)).toList();
     }
 
     @Override
@@ -95,5 +96,12 @@ public class JoinServiceImpl implements JoinService{
         joinRepository.flush();
 
         return joinGather(join);
+    }
+
+    @Override
+    public List<TokenJoinAuthority> getGathers(String memberId) {
+        List<JoinEntity> gathers = joinRepository.findByMemberId(memberId);
+
+        return gathers.stream().map(gather -> new TokenJoinAuthority(gather.getGatherId(), gather.getRule())).toList();
     }
 }

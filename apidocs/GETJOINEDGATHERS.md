@@ -1,6 +1,6 @@
 **Get Joined Gathers**
 ----
-Return Joined Gathers
+내가 참여한 모임 조회
 
 * **URL**
 

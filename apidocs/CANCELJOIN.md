@@ -1,6 +1,6 @@
 **Cancel Join**
 ----
-Cancel joining gather
+모임 참여 취소
 
 * **URL**
 

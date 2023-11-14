@@ -48,12 +48,8 @@ public class JoinController {
     }
 
     @GetMapping("/joins/{memberId}")
-    public ResponseEntity<List<TokenJoinAuthority>> getJoinedGathers(@PathVariable String memberId,
-                                                               HttpServletRequest request) {
-        String jwtToken = request.getHeader("Authorization").replace("Bearer", "");
-        String realMemberId = jwtUtils.getMemberId(jwtToken);
-
-        List<TokenJoinAuthority> body = joinService.getGathers(realMemberId);
+    public ResponseEntity<List<TokenJoinAuthority>> getJoinedGathers(String memberId) {
+        List<TokenJoinAuthority> body = joinService.getGathers(memberId);
 
         return ResponseEntity.ok(body);
     }

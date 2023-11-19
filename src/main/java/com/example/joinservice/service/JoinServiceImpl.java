@@ -46,6 +46,7 @@ public class JoinServiceImpl implements JoinService{
         /**
          * 사용자 선택 날짜, 시간은 모임의 시작 날짜, 시간보다 이를 수 없다.
          * 사용자 선택 날짜, 시간은 모임의 끝 날짜, 시간보다 늦을 수 없다.
+         * 선택한 시작시간이 끝시간보다 늦을 수 없다.
          * 현재 시간이 모임 마감날짜보다 늦다면 참여가 불가능하다.
          */
         String errorMessage = null;
@@ -56,10 +57,12 @@ public class JoinServiceImpl implements JoinService{
             LocalDateTime startDateTime = selectDateTime.getStartDateTime();
             LocalDateTime endDateTime = selectDateTime.getEndDateTime();
 
-            if (startDateTime.toLocalDate().isBefore(gather.getStartDate())
-                    || startDateTime.toLocalTime().isBefore(gather.getStartTime())
-                    || endDateTime.toLocalDate().isAfter(gather.getEndDate())
-                    || endDateTime.toLocalTime().isAfter(gather.getEndTime())) {
+
+            if(endDateTime.isBefore(startDateTime)){
+                errorMessage = env.getProperty("select-time.validation.invalid-time-msg");
+                break;
+            }
+            else if (isOutOfTimeRange(gather, startDateTime, endDateTime)) {
                 errorMessage = env.getProperty("select-time.validation.select-invalid-msg");
                 break;
             } else if (!gather.getState().equals(GatherState.OPEN)) {
@@ -71,6 +74,13 @@ public class JoinServiceImpl implements JoinService{
         if (errorMessage != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
         }
+    }
+
+    private boolean isOutOfTimeRange(ResponseGather gather, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return startDateTime.toLocalDate().isBefore(gather.getStartDate())
+                || startDateTime.toLocalTime().isBefore(gather.getStartTime())
+                || endDateTime.toLocalDate().isAfter(gather.getEndDate())
+                || endDateTime.toLocalTime().isAfter(gather.getEndTime());
     }
 
     @Override

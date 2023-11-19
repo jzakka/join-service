@@ -22,8 +22,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -73,6 +72,28 @@ class JoinServiceImplTest {
                         LocalTime.of(1, 30), // 모임 진행 시간
                         LocalDateTime.of(2077, 10, 2, 0, 0), // 마감일
                         GatherState.CLOSED
+                )
+        );
+
+        /**
+         * 새벽에 진행되는 모임
+         * 모임 참가 가능 날짜 2077/10/3 ~ 2077/10/5
+         * 참여 가능 시간     23:00 ~ 02:00
+         * 모임 진행 기간     01:30
+         * 모임 참여 마감     2077/10/2 00:00
+         */
+        when(gatherServiceClient.getGather("midnight-gather-id")).thenReturn(
+                new ResponseGather(
+                        "test-gather",
+                        "test-leader-id",
+                        "test description",
+                        LocalDate.of(2077, 10, 3), // 시작 날짜
+                        LocalDate.of(2077, 10, 5), // 끝 날짜
+                        LocalTime.of(23, 00), // 시작 시간
+                        LocalTime.of(02, 00), // 끝 시간
+                        LocalTime.of(1, 30), // 모임 진행 시간
+                        LocalDateTime.of(2077, 10, 2, 0, 0), // 마감일
+                        GatherState.OPEN
                 )
         );
     }
@@ -132,7 +153,7 @@ class JoinServiceImplTest {
          * 2077년 10월 5일 2시 7분 ~ 2077년 10월 5일 3시 52분
          *
          * test유저가 위의 시간에 모임이 가능하다는 참여 의사를 요청
-         * 두 번째 선택 시간이 걸려야함
+         * 두 번째 선택 시간이 제한 조건에 위배되므로 걸려야함
          */
         JoinDto joinDto = dummyJoinDto(
                 "test-gather-id",
@@ -157,7 +178,7 @@ class JoinServiceImplTest {
          * 2077년 10월 11일 4시 7분 ~ 2077년 10월 5일 5시 52분
          *
          * test유저가 위의 시간에 모임이 가능하다는 참여 의사를 요청
-         * 두 번째 선택 시간이 걸려야함
+         * 두 번째 선택 시간이 제한조건에 위배되므로 걸려야함
          */
         JoinDto joinDto = dummyJoinDto(
                 "test-gather-id",
@@ -228,6 +249,36 @@ class JoinServiceImplTest {
 
         long selectDatTimesCount = joins.stream().mapToLong(join -> join.getSelectDateTimes().size()).sum();
         assertThat(selectDatTimesCount).isEqualTo(4);
+    }
+
+    @Test
+    @DisplayName("끝시간이 시작시간보다 앞섬")
+    void invalidParticipateTime(){
+        JoinDto joinDto1 = dummyJoinDto(
+                "test-gather-id",
+                "test-user-id1",
+                Rule.MEMBER,
+                LocalDateTime.of(2077, 10, 3, 6, 0),
+                LocalDateTime.of(2077, 10, 3, 4, 0)
+        );
+
+        assertThatThrownBy(() -> joinService.joinGather(joinDto1))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining(env.getProperty("select-time.validation.invalid-time-msg"));
+    }
+
+    @Test
+    @DisplayName("심야 모임 참여, 참여 시간이 자정을 걸침")
+    void joinMidnightGather() {
+        JoinDto joinDto1 = dummyJoinDto(
+                "midnight-gather-id",
+                "test-user-id1",
+                Rule.MEMBER,
+                LocalDateTime.of(2077, 10, 3, 23, 30),
+                LocalDateTime.of(2077, 10, 4, 1, 30)
+        );
+
+        assertThatCode(() -> joinService.joinGather(joinDto1)).doesNotThrowAnyException();
     }
 
     private JoinDto dummyJoinDto(String gatherId,

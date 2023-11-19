@@ -1,10 +1,6 @@
 package com.example.joinservice.service;
 
-import com.example.joinservice.client.GatherServiceClient;
-import com.example.joinservice.enums.GatherState;
-import com.example.joinservice.vo.ResponseGather;
 import com.example.joinservice.dto.JoinDto;
-import com.example.joinservice.dto.SelectDateTimeDto;
 import com.example.joinservice.entity.JoinEntity;
 import com.example.joinservice.repository.JoinRepository;
 import com.example.joinservice.vo.ResponseJoin;
@@ -18,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -29,58 +24,17 @@ public class JoinServiceImpl implements JoinService{
     private final JoinRepository joinRepository;
     private final ModelMapper mapper;
     private final Environment env;
-    private final GatherServiceClient gatherServiceClient;
+    private final Validator validator;
 
     @Override
     public JoinDto joinGather(JoinDto joinGatherDto) {
         JoinEntity member = mapper.map(joinGatherDto, JoinEntity.class);
         member.getSelectDateTimes().forEach(dateTime -> dateTime.setJoin(member));
-        validate(joinGatherDto);
+        validator.validate(joinGatherDto);
 
         JoinEntity savedResult = joinRepository.save(member);
 
         return mapper.map(savedResult, JoinDto.class);
-    }
-
-    private void validate(JoinDto joinGatherDto) {
-        /**
-         * 사용자 선택 날짜, 시간은 모임의 시작 날짜, 시간보다 이를 수 없다.
-         * 사용자 선택 날짜, 시간은 모임의 끝 날짜, 시간보다 늦을 수 없다.
-         * 선택한 시작시간이 끝시간보다 늦을 수 없다.
-         * 현재 시간이 모임 마감날짜보다 늦다면 참여가 불가능하다.
-         */
-        String errorMessage = null;
-
-        ResponseGather gather = gatherServiceClient.getGather(joinGatherDto.getGatherId());
-
-        for (SelectDateTimeDto selectDateTime : joinGatherDto.getSelectDateTimes()) {
-            LocalDateTime startDateTime = selectDateTime.getStartDateTime();
-            LocalDateTime endDateTime = selectDateTime.getEndDateTime();
-
-
-            if(endDateTime.isBefore(startDateTime)){
-                errorMessage = env.getProperty("select-time.validation.invalid-time-msg");
-                break;
-            }
-            else if (isOutOfTimeRange(gather, startDateTime, endDateTime)) {
-                errorMessage = env.getProperty("select-time.validation.select-invalid-msg");
-                break;
-            } else if (!gather.getState().equals(GatherState.OPEN)) {
-                errorMessage = env.getProperty("select-time.validation.deadline-msg");
-                break;
-            }
-        }
-
-        if (errorMessage != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
-        }
-    }
-
-    private boolean isOutOfTimeRange(ResponseGather gather, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        return startDateTime.toLocalDate().isBefore(gather.getStartDate())
-                || startDateTime.toLocalTime().isBefore(gather.getStartTime())
-                || endDateTime.toLocalDate().isAfter(gather.getEndDate())
-                || endDateTime.toLocalTime().isAfter(gather.getEndTime());
     }
 
     @Override

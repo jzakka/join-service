@@ -54,12 +54,13 @@ public class JoinServiceImpl implements JoinService{
     }
 
     @Override
-    public JoinDto changeSelectDateTimes(JoinDto join) {
-        cancelGather(join.getGatherId(), join.getMemberId());
+    public JoinDto changeSelectDateTimes(JoinDto reJoinDto) {
+        validator.validate(reJoinDto);
+        cancelGather(reJoinDto.getGatherId(), reJoinDto.getMemberId());
 
         joinRepository.flush();
 
-        return joinGather(join);
+        return joinGather(reJoinDto);
     }
 
     @Override
